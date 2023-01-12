@@ -4,6 +4,41 @@ import i18n from '../../../website/common/script/i18n';
 import { generateUser } from '../../helpers/common.helper';
 import { NotAuthorized, BadRequest } from '../../../website/common/script/libs/errors';
 
+const unlockExports = require('../../../website/common/script/ops/unlock');
+
+describe('shared.ops.unlock.getIndividualItemPrice', () => {
+  it('returns 0.5 when setType is equal guear', () => {
+    expect(unlockExports.getIndividualItemPrice('gear', null, null)).to.equal(0.5)
+  });
+  
+  it('returns BadRequest when setType is not equal guear and item.price is false', () => {
+    try {
+      const item = { price: false };
+      const req = { language: 'en' };
+      unlockExports.getIndividualItemPrice('tools', item, req);
+    } catch (err) {
+      expect(err).to.be.an.instanceof(BadRequest);
+      expect(err.message).to.equal('This set of items is invalid and cannot be unlocked.');
+    }
+  });
+
+  it('returns BadRequest when setType is not equal guear and item.price is equal a 0', () => {
+    try {
+      const item = { price: 0 };
+      const req = { language: 'us' };
+      unlockExports.getIndividualItemPrice('tools', item, req);
+    } catch (err) {
+      expect(err).to.be.an.instanceof(BadRequest);
+      expect(err.message).to.equal('This set of items is invalid and cannot be unlocked.');
+    }
+  });
+
+  it('returns 2 when setType is not equal guear and item.price is equal a 8', () => {
+    const item = { price: 8 };
+    expect(unlockExports.getIndividualItemPrice('tools', item, null)).to.equal(2)
+  });
+});
+
 describe('shared.ops.unlock', () => {
   let user;
   const unlockPath = 'shirt.convict,shirt.cross,shirt.fire,shirt.horizon,shirt.ocean,shirt.purple,shirt.rainbow,shirt.redblue,shirt.thunder,shirt.tropical,shirt.zombie';
