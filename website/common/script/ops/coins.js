@@ -2,30 +2,21 @@ import i18n from '../i18n';
 import BadRequest from '../libs/errors';
 
 export default function coins(user, type, quantity, req) {
-
     const { balance } = user;
+    const coinValues = {
+        gold: { value: 45, multiplier: 1.3, minBalance: 100 },
+        silver: { value: 35, multiplier: 1.2, minBalance: 90 },
+        bronze: { value: 25, multiplier: 1.1, minBalance: 80 },
+    };
 
-    if (balance > 0) {
-        if (type === 'gold' && balance >= 100) {
-
-            return quantity * 45 * 1.3;
-
-        } else if (type === 'silver' && balance >= 90) {
-
-            return quantity * 35 * 1.2;
-
-        } else if (type === 'bronze' && balance >= 80) {
-
-            return quantity * 25 * 1.1;
-
-        } else {
-
-            throw new BadRequest(i18n.t('invalidCoinType', req.language));
-
-        }
-    } else {
-
+    if (balance <= 0 || balance < coin.minBalance) {
         throw new BadRequest(i18n.t('insufficientFunds', req.language));
-
     }
+
+    const coin = coinValues[type];
+    if (!coin) {
+        throw new BadRequest(i18n.t('invalidCoinType', req.language));
+    }
+
+    return quantity * coin.value * coin.multiplier;
 }
