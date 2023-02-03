@@ -29,4 +29,10 @@ describe('shared.ops.coins', () => {
             expect(err.message).to.equal(i18n.t('invalidCoinType'));
         }
     });
+  
+    it('returns 90 when type is diamond and quantity 1', () => {
+        let user = generateUser();
+        user.balance = 90;
+        expect(coins(user, 'diamond', 1, req)).to.equal(90)
+    });
 });
